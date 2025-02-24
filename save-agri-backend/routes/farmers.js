@@ -19,7 +19,7 @@ const pool = new Pool({
 });
 
 // GET /farmers - Liste des producteurs (avec recherche géographique)
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { city, radius } = req.query;
 
@@ -35,11 +35,13 @@ router.get('/', authenticateToken, async (req, res) => {
     const latitude = nominatimData[0].lat;
     const longitude = nominatimData[0].lon;
 
+    const radiusInMeters = parseFloat(radius) * 1000; // Assumant que radius est en km
+
     // Requête SQL avec PostGIS pour la recherche géographique
     const query = `
       SELECT id, name, description, address, city, zip_code, ST_AsGeoJSON(location) AS location, phone, website
       FROM farmers
-      WHERE ST_DWithin(location, ST_MakePoint(longitude, latitude)::geography, radius);
+      WHERE ST_DWithin(location, ST_MakePoint($1, $2)::geography, $3);
     `;
 
     const { rows } = await pool.query(query, [longitude, latitude, radius]);
@@ -75,7 +77,25 @@ router.get('/:id', async (req, res) => {
 // POST /farmers - Création d'un producteur
 router.post('/', async (req, res) => {
   try {
-    const { name, description, address, city, zip_code, longitude, latitude, phone, website, userId } = req.body;
+    const { name, description, address, city, zip_code, phone, website, userId } = req.body;
+
+    // Construire l'adresse complète pour Nominatim
+    const fullAddress = `${address}, ${city}, ${zip_code}`;
+
+    // Encodage de l'URL
+    const encodedAddress = encodeURIComponent(fullAddress);
+
+    // Utilisation de l'API Nominatim pour obtenir les coordonnées de l'adresse
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json`;
+    const nominatimResponse = await fetch(nominatimUrl);
+    const nominatimData = await nominatimResponse.json();
+
+    if (nominatimData.length === 0) {
+      return res.status(400).send('Adresse non trouvée');
+    }
+
+    const latitude = nominatimData[0].lat;
+    const longitude = nominatimData[0].lon;
 
     // Requête SQL pour insérer le producteur
     const query = `
