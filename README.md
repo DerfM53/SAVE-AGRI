@@ -1,5 +1,58 @@
 # Save Agri - Backend
 
+save-agri/
+│
+├── save-agri-backend/
+│   ├── middlewares/
+│   │   ├── auth.js
+│   │   └── upload.js
+│   ├── node_modules/
+│   ├── routes/
+│   │   ├── farmers.js
+│   │   ├── favorites.js
+│   │   ├── products.js
+│   │   ├── ratings.js
+│   │   └── users.js
+│   ├── uploads/
+│   ├── .env
+│   ├── index.js
+│   ├── package-lock.json
+│   └── package.json
+│
+├── save-agri-frontend/
+│   ├── node_modules/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── assets/
+│   │   │   └── logo.png
+│   │   ├── components/
+│   │   │   ├── FarmerCard.js
+│   │   │   ├── FarmerList.js
+│   │   │   ├── FarmerPage.css
+│   │   │   ├── FarmerPage.js
+│   │   │   ├── HomePage.css
+│   │   │   ├── HomePage.js
+│   │   │   ├── LoginForm.js
+│   │   │   ├── Map.js
+│   │   │   ├── ProductCard.js
+│   │   │   ├── ProductList.js
+│   │   │   ├── RegisterFarmerForm.css
+│   │   │   ├── RegisterFarmerForm.js
+│   │   │   └── RegisterForm.js
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.css
+│   │   ├── App.js
+│   │   ├── index.css
+│   │   └── index.js
+│   ├── package-lock.json
+│   ├── package.json
+│   └── README.md
+├── .gitignore
+└── README.md
+
+
 ## Description
 Save Agri est une application web visant à connecter les agriculteurs locaux avec les consommateurs. Ce dépôt contient le code backend de l'application, gérant l'API et la connexion à la base de données.
 
