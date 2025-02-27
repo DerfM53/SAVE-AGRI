@@ -20,13 +20,13 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-async function geocodeAddress(address, city, zipCode) {
-  if (!address || !city || !zipCode) {
-    console.error('Données d\'adresse manquantes:', { address, city, zipCode });
+async function geocodeAddress(address, city, zip_code) {
+  if (!address || !city || !zip_code) {
+    console.error('Données d\'adresse manquantes:', { address, city, zip_code });
     throw new Error('Données d\'adresse incomplètes');
   }
 
-  const query = encodeURIComponent(`${address}, ${city}, ${zipCode}, France`);
+  const query = encodeURIComponent(`${address}, ${city}, ${zip_code}, France`);
   const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`;
 
   console.log('URL de requête Nominatim:', nominatimUrl);
@@ -43,7 +43,7 @@ async function geocodeAddress(address, city, zipCode) {
       };
     } else {
       // Si l'adresse complète n'est pas trouvée, essayez avec juste la ville et le code postal
-      const fallbackQuery = encodeURIComponent(`${city}, ${zipCode}, France`);
+      const fallbackQuery = encodeURIComponent(`${city}, ${zip_code}, France`);
       const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${fallbackQuery}&limit=1`;
 
       console.log('URL de requête Nominatim (fallback):', fallbackUrl);
@@ -229,10 +229,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, upload.single('photo'), async (req, res) => {
   try {
     console.log('Requête reçue:', req.body);
-    const { name, description, address, city, zipCode, phone, website } = req.body;
+    const { name, description, address, city, zip_code, phone, website } = req.body;
     const userId = req.user.userId;
 
-    console.log('Données reçues:', { name, description, address, city, zipCode, phone, website });
+    console.log('Données reçues:', { name, description, address, city, zip_code, phone, website });
     console.log('UserId from token:', userId);
 
     // Vérifier si l'utilisateur existe
@@ -250,7 +250,7 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     // Géocodage de l'adresse
     let coordinates;
     try {
-      coordinates = await geocodeAddress(address, city, zipCode);
+      coordinates = await geocodeAddress(address, city, zip_code);
       console.log("Coordonnées obtenues:", coordinates);
     } catch (err) {
       console.error('Erreur complète:', err);
@@ -263,7 +263,7 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING id, name, description, address, city, zip_code, phone, website, user_id, latitude, longitude
     `;
-    const values = [name, description, address, city, zipCode, phone, website, userId, coordinates.latitude, coordinates.longitude];
+    const values = [name, description, address, city, zip_code, phone, website, userId, coordinates.latitude, coordinates.longitude];
 
     console.log('Requête SQL pour insérer le farmer:', query);
     console.log('Valeurs pour l\'insertion:', values);
