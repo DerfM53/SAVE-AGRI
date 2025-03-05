@@ -1,0 +1,48 @@
+/* save-agri-frontend/src/components/FarmerPage.css */
+.farmer-page-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.farmer-page-container h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.farmer-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.farmer-photo {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.farmer-info {
+  flex: 1;
+}
+
+.farmer-info p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.farmer-info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.farmer-info a:hover {
+  text-decoration: underline;
+}

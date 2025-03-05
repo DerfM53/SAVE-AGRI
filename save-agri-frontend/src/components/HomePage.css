@@ -1,0 +1,160 @@
+/* HomePage.css */
+
+.home-page {
+    text-align: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.search-container {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-container h2 {
+    margin-top: 0;
+    color: #4CAF50;
+}
+
+.input-style {
+    margin: 8px 0;
+    padding: 8px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.geolocation-option {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.geolocation-option label {
+    margin-left: 10px;
+}
+
+.search-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: #4CAF50;
+    margin: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: #45a049;
+}
+
+.search-button:disabled {
+    background-color: #ddd;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.farmers-list {
+    margin-top: 30px;
+}
+
+.farmer-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.account-links {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    text-align: center; /* Ajoutez cette ligne pour centrer les boutons */
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+
+.login-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+  
+.login-button:hover {
+    background-color: #45a049;
+}
+
+.logout-button {
+    background-color: #f44336;
+}
+
+.button:hover {
+    opacity: 0.8;
+}
+
+.button.user {
+    background-color: #45a049;
+}
+
+.farmer-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+  
+.farmer-button:hover {
+    background-color: #45a049;
+}
+  
+
+.error-message {
+    color: red;
+    margin: 10px 0;
+}
+
+.user-greeting {
+    font-size: 16px;
+    margin-right: 10px;
+}
+  
