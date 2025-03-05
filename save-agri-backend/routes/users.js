@@ -85,8 +85,8 @@ router.post('/login', async (req, res) => {
     // 3. Générer un JWT
     const token = jwt.sign({ userId: rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    // 4. Retourner le JWT
-    res.json({ token });
+    // 4. Retourner le JWT et l'ID de l'utilisateur
+    res.json({ token, userId: rows[0].id });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erreur serveur');
