@@ -3,7 +3,7 @@ import express from 'express';
 import pkg from 'pg';
 const { Pool } = pkg;
 import fetch from 'node-fetch';
-import authenticateToken from '../middleware/auth.js';
+import { authenticateToken } from '../middleware/auth.js';
 import dotenv from 'dotenv';
 import multer from 'multer';
 

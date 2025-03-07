@@ -1,0 +1,17 @@
+{
+  "name": "save-agri",
+  "version": "1.0.0",
+  "description": "save-agri/ │ │ ├── save-agri-backend/ │   ├── __tests__/ │   │   └── login-limit.test.js │   ├── middlewares/ │   │   ├── auth.js │   │   ├── upload.js │   │   └── test.js │   ├── node_modules/ │   ├── routes/ │   │   ├── farmers.js │   │   ├── favorites.js │   │   ├── products.js │   │   ├── ratings.js │   │   └── users.js │   ├── uploads/ │   ├── babelrc │   ├── .env │   ├── index.js │   ├── jest.config.js │   ├── package-lock.json │   └── package.json │ ├── save-agri-frontend/ │   ├── node_modules/ │   ├── public/ │   │   └── index.html │   ├── src/ │   │   ├── assets/ │   │   │   └── logo.png │   │   ├── components/ │   │   │   ├── FarmerCard.js │   │   │   ├── FarmerList.js │   │   │   ├── FarmerPage.css │   │   │   ├── FarmerPage.js │   │   │   ├── HomePage.css │   │   │   ├── HomePage.js │   │   │   ├── LoginForm.js │   │   │   ├── Map.js │   │   │   ├── ProductCard.js │   │   │   ├── ProductList.js │   │   │   ├── RegisterFarmerForm.css │   │   │   ├── RegisterFarmerForm.js │   │   │   ├── RegisterForm.js │   │   │   └── UpdateFarmerFormjs │   │   ├── services/ │   │   │   ├── api.js │   │   │   └── authService.js │   │   ├── App.css │   │   ├── App.js │   │   ├── index.css │   │   └── index.js │   ├── package-lock.json │   ├── package.json │   └── README.md ├── .gitignore └── README.md",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd save-agri-backend && npm start\" \"cd save-agri-frontend && npm start\"",
+    "install-all": "npm install && cd save-agri-backend && npm install && cd ../save-agri-frontend && npm install",
+    "test": "concurrently \"cd save-agri-backend && npm test\" \"cd save-agri-frontend && npm test\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

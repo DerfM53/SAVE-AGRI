@@ -3,7 +3,7 @@ import axios from 'axios';
 import authService from './authService';
 
 // Configuration de l'URL de base pour les requêtes API
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 // Configuration de l'intercepteur axios pour ajouter le token d'authentification
 axios.interceptors.request.use(
@@ -42,7 +42,15 @@ const userService = {
   // Inscription
   register: async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/users/register`, userData);
+      const response = await axios.post(`${API_URL}/users`, userData);  // Modification ici
+      if (response.data && response.data.token) {
+        const token = response.data.token;
+        const userData = {
+          id: response.data.user.id,
+          username: response.data.user.username
+        };
+        authService.login(userData, token);
+      }
       return response.data;
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);

@@ -2,7 +2,15 @@
 
 save-agri/
 │
+│
 ├── save-agri-backend/
+│   ├── __tests__/
+│   │   ├── auth.test.js
+│   │   ├── farmers.test.js
+│   │   ├── login-limit.test.js
+│   │   └── setup.js
+│   ├── config/
+│   │   └── database.js
 │   ├── middlewares/
 │   │   ├── auth.js
 │   │   └── upload.js
@@ -14,8 +22,10 @@ save-agri/
 │   │   ├── ratings.js
 │   │   └── users.js
 │   ├── uploads/
+│   ├── babelrc
 │   ├── .env
 │   ├── index.js
+│   ├── jest.config.js
 │   ├── package-lock.json
 │   └── package.json
 │
@@ -58,24 +68,24 @@ save-agri/
 ## Description
 Save Agri est une application web visant à connecter les agriculteurs locaux avec les consommateurs. Ce dépôt contient le code backend de l'application, gérant l'API et la connexion à la base de données.
 
+
 ## Prérequis
 - Node.js (v18.20.6 ou supérieur)
 - PostgreSQL
 - npm ou yarn
 
-## Installation
+## Installation Rapide
 
-cd save-agri-backend
+Installation de toutes les dépendances en une seule commande :
+```bash
+npm run install-all
+```
 
+## Configuration
 
-2. Installez les dépendances :
-
-npm install
-
-
-3. Configurez les variables d'environnement :
-Créez un fichier `.env` à la racine du projet et ajoutez les variables suivantes :
-
+### Variables d'environnement Backend
+Créez un fichier `.env` dans le dossier `save-agri-backend` :
+```
 PORT=3000
 DB_USER=votre_utilisateur_postgres
 DB_HOST=localhost
@@ -86,88 +96,100 @@ JWT_SECRET=votre_secret_jwt
 CLOUDINARY_CLOUD_NAME=votre_cloud_name
 CLOUDINARY_API_KEY=votre_api_key
 CLOUDINARY_API_SECRET=votre_api_secret
+```
 
+## Démarrage Rapide
 
-4. Initialisez la base de données PostgreSQL :
-Créez une base de données nommée `save_agri` et exécutez les scripts SQL nécessaires pour créer les tables.
-
-## Démarrage
-
-Pour lancer le serveur en mode développement :
-
+Pour démarrer les serveurs frontend et backend simultanément :
+```bash
 npm start
+```
 
-Le serveur démarrera sur `http://localhost:3000`.
+Le backend démarrera sur http://localhost:3000
+Le frontend démarrera sur http://localhost:3001
 
-## Structure du projet
+## Tests
 
-- `index.js` : Point d'entrée de l'application
-- `routes/` : Contient les fichiers de routes pour chaque entité (farmers, users, products, favorites, ratings)
-- `middleware/` : Contient les middlewares d'authentification et d'upload de fichiers
-- `uploads/` : Dossier temporaire pour le stockage des fichiers uploadés
+Lancer tous les tests (backend et frontend) :
+```bash
+npm test
+```
 
-## Fonctionnalités principales
+### Tests Backend
+Les tests couvrent :
+- Authentification et validation des tokens JWT
+- Rate limiting et protection contre les attaques par force brute
+- Validation des données utilisateur
+- Protection contre les injections SQL
+- Gestion sécurisée des mots de passe
 
-- Inscription et connexion des utilisateurs
-- Gestion des agriculteurs et de leurs produits
-- Système de favoris et de notations
+## Sécurité
+
+L'application implémente plusieurs niveaux de sécurité :
+- Authentification JWT avec expiration des tokens
+- Protection contre les injections SQL
+- Rate limiting sur les tentatives de connexion
+- Validation des entrées utilisateur
+- Hachage sécurisé des mots de passe avec bcrypt
+
+## API Endpoints
+
+### Authentification
+- `POST /users/login` - Connexion
+- `POST /users/register` - Inscription
+- `POST /users/register/farmer` - Inscription agriculteur
+
+### Agriculteurs
+- `GET /farmers` - Liste des agriculteurs
+- `GET /farmers/:id` - Détails d'un agriculteur
+- `PUT /farmers/:id` - Mise à jour profil agriculteur
+
+### Produits
+- `GET /products` - Liste des produits
+- `POST /products` - Ajout d'un produit
+- `PUT /products/:id` - Mise à jour produit
+
+## Fonctionnalités
+
+### Backend
+- Gestion des utilisateurs et authentification
+- API RESTful
 - Upload et gestion d'images via Cloudinary
+- Base de données PostgreSQL
+- Tests automatisés
 
-## Technologies utilisées
+### Frontend
+- Interface utilisateur responsive
+- Système de recherche et filtrage
+- Gestion des favoris
+- Carte interactive des agriculteurs
+- Formulaires sécurisés
 
-- Express.js : Framework web
-- PostgreSQL : Base de données
-- JSON Web Token (JWT) : Authentification
-- Bcrypt : Hachage des mots de passe
-- Multer : Gestion des uploads de fichiers
-- Cloudinary : Stockage et gestion des images
+## Technologies Utilisées
 
----
+### Backend
+- Express.js
+- PostgreSQL
+- JWT
+- Bcrypt
+- Multer
+- Cloudinary
 
-# Save Agri - Frontend
-
-## Description du Frontend
-Le frontend de Save Agri est une application web qui permet aux utilisateurs d'interagir avec l'API backend, de s'inscrire, de se connecter, et d'explorer les produits des agriculteurs locaux.
-
-## Prérequis pour le Frontend
-- Node.js (v18.20.6 ou supérieur)
-- npm ou yarn
-
-## Installation du Frontend
-
-
-2. Installez les dépendances :
-
-npm install
-
-
-3. Configurez les variables d'environnement si nécessaire.
-
-## Démarrage du Frontend
-
-Pour lancer le frontend en mode développement :
-
-npm start ou yarn start
-
-
-Le frontend démarrera sur `http://localhost:3000` (ou un autre port si configuré).
-
-## Fonctionnalités principales du Frontend
-
-- Interface utilisateur pour l'inscription et la connexion des utilisateurs.
-- Affichage des produits des agriculteurs.
-- Fonctionnalités de recherche et de filtrage.
-- Système de favoris pour que les utilisateurs puissent enregistrer leurs produits préférés.
-
----
+### Frontend
+- React.js
+- React Router
+- Axios
+- Leaflet (pour la carte)
+- Material-UI
 
 ## Contribution
 
-Les contributions sont les bienvenues. Veuillez ouvrir une issue pour discuter des modifications majeures que vous souhaitez apporter.
+Les contributions sont les bienvenues. Pour contribuer :
+1. Créez une branche pour votre fonctionnalité
+2. Ajoutez les tests appropriés
+3. Mettez à jour la documentation
+4. Soumettez une Pull Request
 
 ## Licence
 
 [ISC](https://opensource.org/licenses/ISC)
-
-
-
