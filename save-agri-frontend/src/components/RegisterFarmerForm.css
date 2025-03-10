@@ -62,4 +62,37 @@
     background-color: #ddffdd;
     border-left: 6px solid #4CAF50;
   }
-  
+
+/* Styles pour le champ d'upload d'image */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-control-file {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.form-text {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #666;
+}
+
+/* Style pour la prévisualisation de l'image si vous souhaitez l'ajouter plus tard */
+.image-preview {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 4px;
+  display: none;
+}
+
+.image-preview.active {
+  display: block;
+}

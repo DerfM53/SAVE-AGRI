@@ -10,7 +10,11 @@ save-agri/
 │   │   ├── login-limit.test.js
 │   │   └── setup.js
 │   ├── config/
+│   │   ├── cloudinary.js
 │   │   └── database.js
+│   ├── db/
+│   │    └── migrations
+│   │         └── 001_add_image_to_farmers.sql
 │   ├── middlewares/
 │   │   ├── auth.js
 │   │   └── upload.js

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { farmerService } from '../services/api';
 import authService from '../services/authService';
+import './RegisterFarmerForm.css'; // Réutiliser les styles
 
 function UpdateFarmerForm() {
   const { id } = useParams();
@@ -10,6 +11,7 @@ function UpdateFarmerForm() {
   const [formData, setFormData] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [image, setImage] = useState(null);
 
   // Vérifier l'authentification
   useEffect(() => {
@@ -69,17 +71,39 @@ function UpdateFarmerForm() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+      setImage(file);
+      setError('');
+    } else {
+      setError('Format d\'image invalide. Utilisez JPG ou PNG.');
+      e.target.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
     try {
-      await farmerService.updateFarmer(id, formData);
+      const formDataToSend = new FormData();
+      
+      // Ajouter toutes les données du formulaire
+      Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      // Ajouter la nouvelle image si elle existe
+      if (image) {
+        formDataToSend.append('image', image);
+      }
+
+      await farmerService.updateFarmer(id, formDataToSend);
       setSuccess('Modifications enregistrées avec succès !');
-      // Attendre un court instant pour montrer le message de succès
-      setTimeout(() => {
-        navigate(`/farmers/${id}`); // Correction du chemin
-      }, 1500);
+      setTimeout(() => navigate(`/farmers/${id}`), 1500);
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error);
       setError('Erreur lors de la mise à jour');
@@ -87,105 +111,121 @@ function UpdateFarmerForm() {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ color: '#4CAF50', marginBottom: '20px' }}>Modifier les informations</h2>
+    <div className="register-farmer-container">
+      <h2>Modifier les informations</h2>
       
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-      {success && <div style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
+      {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
       
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Nom :</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
+      <form onSubmit={handleSubmit} className="register-farmer-form">
+        <div className="form-section">
+          <div className="form-group">
+            <label htmlFor="name">Nom :</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description :</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="address">Adresse :</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="city">Ville :</label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="zip_code">Code postal :</label>
+            <input
+              type="text"
+              name="zip_code"
+              value={formData.zip_code}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="phone">Téléphone :</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone || ''}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="website">Site web :</label>
+            <input
+              type="url"
+              name="website"
+              value={formData.website || ''}
+              onChange={handleChange}
+              className="form-control"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="image">Nouvelle photo de la ferme (optionnel)</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/jpeg,image/png"
+              onChange={handleImageChange}
+              className="form-control-file"
+            />
+            <small className="form-text text-muted">
+              Format accepté : JPG ou PNG, taille max : 5MB
+            </small>
+          </div>
+          {formData.image_url && (
+            <div>
+              <p>Image actuelle :</p>
+              <img 
+                src={formData.image_url} 
+                alt="Ferme actuelle" 
+                style={{maxWidth: '200px', marginTop: '10px'}}
+              />
+            </div>
+          )}
         </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Description :</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px', minHeight: '100px' }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Adresse :</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Ville :</label>
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Code postal :</label>
-          <input
-            type="text"
-            name="zip_code"
-            value={formData.zip_code}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Téléphone :</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone || ''}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Site web :</label>
-          <input
-            type="url"
-            name="website"
-            value={formData.website || ''}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <button
-          type="submit"
-          style={{
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
+        <button type="submit" className="submit-button">
           Enregistrer les modifications
         </button>
       </form>

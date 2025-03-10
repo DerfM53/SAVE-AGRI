@@ -5,11 +5,10 @@ const { Pool } = pkg;
 import fetch from 'node-fetch';
 import { authenticateToken } from '../middleware/auth.js';
 import dotenv from 'dotenv';
-import multer from 'multer';
+import upload from '../middleware/upload.js';
 
 dotenv.config();
 
-const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 // Configuration de la base de données PostgreSQL (à adapter)
@@ -200,7 +199,8 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const query = `
-      SELECT id, name, description, address, city, zip_code, latitude, longitude, phone, website, user_id
+      SELECT id, name, description, address, city, zip_code, 
+             latitude, longitude, phone, website, user_id, image_url
       FROM farmers
       WHERE id = $1
     `;
@@ -219,6 +219,7 @@ router.get('/:id', async (req, res) => {
       }
     };
 
+    console.log('Données du farmer envoyées:', farmer);
     res.json(farmer);
   } catch (err) {
     console.error(err);
@@ -227,9 +228,10 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /farmers - Création d'un producteur
-router.post('/', authenticateToken, upload.single('photo'), async (req, res) => {
+router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
   try {
-    console.log('Requête reçue:', req.body);
+    console.log('Fichier reçu:', req.file);
+    console.log('Corps de la requête:', req.body);
     const { name, description, address, city, zip_code, phone, website } = req.body;
     const userId = req.user.userId;
 
@@ -258,13 +260,19 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
       return res.status(500).json({ message: 'Erreur serveur', error: err.message, stack: err.stack });
     }
 
-    // Requête SQL pour insérer le producteur
+    // Ajouter l'URL de l'image si elle a été uploadée
+    const image_url = req.file ? req.file.path : null;
+
+    // Modifier la requête SQL pour inclure image_url
     const query = `
-      INSERT INTO farmers (name, description, address, city, zip_code, phone, website, user_id, latitude, longitude)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING id, name, description, address, city, zip_code, phone, website, user_id, latitude, longitude
+      INSERT INTO farmers (name, description, address, city, zip_code, phone, website, user_id, latitude, longitude, image_url)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING id, name, description, address, city, zip_code, phone, website, user_id, latitude, longitude, image_url
     `;
-    const values = [name, description, address, city, zip_code, phone, website, userId, coordinates.latitude, coordinates.longitude];
+    const values = [
+      name, description, address, city, zip_code, phone, website, 
+      userId, coordinates.latitude, coordinates.longitude, image_url
+    ];
 
     console.log('Requête SQL pour insérer le farmer:', query);
     console.log('Valeurs pour l\'insertion:', values);
@@ -290,7 +298,7 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
 });
 
 // PUT /farmers/:id - Mise à jour d'un producteur
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, address, city, zip_code, phone, website } = req.body;
@@ -303,22 +311,52 @@ router.put('/:id', async (req, res) => {
       longitude = coordinates.longitude;
     }
 
-    // Requête SQL pour mettre à jour le producteur
+    // Obtenir l'URL de l'image si une nouvelle image a été uploadée
+    const image_url = req.file ? req.file.path : undefined;
+
+    // Construction dynamique de la requête SQL
+    let updateFields = [
+      'name = $1',
+      'description = $2',
+      'address = $3',
+      'city = $4',
+      'zip_code = $5',
+      'phone = $6',
+      'website = $7'
+    ];
+    
+    const values = [
+      name, description, address, city, zip_code, phone, website
+    ];
+
+    let paramCount = values.length;
+
+    if (latitude !== undefined && longitude !== undefined) {
+      updateFields.push(`latitude = $${paramCount + 1}`);
+      updateFields.push(`longitude = $${paramCount + 2}`);
+      values.push(latitude, longitude);
+      paramCount += 2;
+    }
+
+    if (image_url !== undefined) {
+      updateFields.push(`image_url = $${paramCount + 1}`);
+      values.push(image_url);
+      paramCount += 1;
+    }
+
+    values.push(id); // Ajout de l'ID à la fin des valeurs
+
     const query = `
       UPDATE farmers
-      SET name = $1, description = $2, address = $3, city = $4, zip_code = $5,
-          phone = $6, website = $7, 
-          latitude = COALESCE($8, latitude), longitude = COALESCE($9, longitude)
-      WHERE id = $10
-      RETURNING id, name, description, address, city, zip_code, phone, website, user_id, latitude, longitude
+      SET ${updateFields.join(', ')}
+      WHERE id = $${values.length}
+      RETURNING id, name, description, address, city, zip_code, phone, website, user_id, latitude, longitude, image_url
     `;
-    const { rows } = await pool.query(query, [
-      name, description, address, city, zip_code, phone, website, 
-      latitude, longitude, id
-    ]);
+
+    const { rows } = await pool.query(query, values);
 
     if (rows.length === 0) {
-      return res.status(404).send('Producteur non trouvé');
+      return res.status(404).json({ message: 'Producteur non trouvé' });
     }
 
     // Ajouter les coordonnées au format attendu par le frontend
@@ -332,8 +370,8 @@ router.put('/:id', async (req, res) => {
 
     res.json(farmer);
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Erreur serveur');
+    console.error('Erreur lors de la mise à jour:', err);
+    res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 });
 

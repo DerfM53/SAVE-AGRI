@@ -13,9 +13,9 @@ function RegisterFarmerForm() {
     city: '',
     zip_code: '',
     phone: '',
-    website: '',
-    photo: null
+    website: ''
   });
+  const [image, setImage] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -34,6 +34,17 @@ function RegisterFarmerForm() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+      setImage(file);
+      setError('');
+    } else {
+      setError('Format d\'image invalide. Utilisez JPG ou PNG.');
+      e.target.value = '';
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
@@ -45,18 +56,28 @@ function RegisterFarmerForm() {
       if (!user || !token) {
         throw new Error('Utilisateur non connecté');
       }
+  
+      // Créer un FormData
+      const formDataToSend = new FormData();
 
-      const farmerDataWithUserId = {
-        ...formData,
-        user_id: user.id // Assurez-vous que l'ID de l'utilisateur est inclus
-      };  
+      console.log("FormData initial:", formDataToSend);
 
-      await farmerService.createFarmer(farmerDataWithUserId, token);
+      Object.keys(formData).forEach(key => {
+        console.log(`Ajout de ${key}:`, formData[key]);
+        formDataToSend.append(key, formData[key]);
+      });
+      formDataToSend.append('user_id', user.id);
+      if (image) {
+        console.log("Ajout de l'image:", image);
+        formDataToSend.append('image', image);
+      }
+
+      console.log("FormData final:", Object.fromEntries(formDataToSend.entries()));
+
+  
+      await farmerService.createFarmer(formDataToSend, token);
       
-      // Stocker le message de succès dans sessionStorage
       sessionStorage.setItem('farmerCreationSuccess', 'Producteur créé avec succès !');
-      
-      // Redirection vers la HomePage
       navigate('/');
       
     } catch (error) {
@@ -78,13 +99,28 @@ function RegisterFarmerForm() {
         <div className="form-section">
           <h2>Informations de la Ferme</h2>
           <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Nom de la ferme" required />
-         
           <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Adresse" required />
           <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Ville" required />
           <input type="text" name="zip_code" value={formData.zip_code} onChange={handleChange} placeholder="Code Postal" required />
           <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Téléphone" required />
           <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description de la ferme" required />
           <input type="url" name="website" value={formData.website} onChange={handleChange} placeholder="Site Web" />
+        </div>
+
+        <div className="form-section">
+          <div className="form-group">
+            <label htmlFor="image">Photo de la ferme</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/jpeg,image/png"
+              onChange={handleImageChange}
+              className="form-control-file"
+            />
+            <small className="form-text text-muted">
+              Format accepté : JPG ou PNG, taille max : 5MB
+            </small>
+          </div>
         </div>
 
         <button type="submit" className="submit-button">S'inscrire comme agriculteur</button>

@@ -147,40 +147,31 @@ const farmerService = {
   // Créer un nouveau producteur
   createFarmer: async (farmerData) => {
     try {
-      console.log("Création d'un nouveau producteur avec les données:", farmerData);
-      if (farmerData.photo) {
-        const formData = new FormData();
-        
-        // Ajouter tous les champs à FormData
-        Object.keys(farmerData).forEach(key => {
-          formData.append(key, farmerData[key]);
-        });
-        
-        const response = await axios.post(`${API_URL}/farmers`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-            // Le token sera ajouté par l'intercepteur
-          }
-        });
-        return response.data;
-      } else {
-        // Si pas de fichier, envoyer comme JSON normal
-        const response = await axios.post(`${API_URL}/farmers`, farmerData);
-        return response.data;
-      }
+      console.log("Données avant envoi:", Object.fromEntries(farmerData.entries()));
+      const response = await axios.post(`${API_URL}/farmers`, farmerData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
     } catch (error) {
-      console.error('Erreur lors de la création du producteur:', error);
+      console.error("Erreur création farmer:", error);
       throw error;
     }
   },
 
   // Mettre à jour un producteur
-  updateFarmer: async (id, farmerData) => {
+  updateFarmer: async (id, formData) => {
     try {
-      const response = await axios.put(`${API_URL}/farmers/${id}`, farmerData);
+      const response = await axios.put(`${API_URL}/farmers/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${authService.getToken()}`
+        }
+      });
       return response.data;
     } catch (error) {
-      console.error(`Erreur lors de la mise à jour du producteur ${id}:`, error);
+      console.error("Erreur mise à jour farmer:", error);
       throw error;
     }
   },
